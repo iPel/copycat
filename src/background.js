@@ -2,7 +2,7 @@ var el=document.getElementById('text');
 function copyText(data){
 	var dataSet=data.match(/[^\n\r]+/g);
 	for(var i=0,tmp;i<dataSet.length;){
-		tmp=dataSet[i].replace(/[　\s]+/g,' ').trim();
+		tmp=dataSet[i].replace(/[\s]+/g,' ').trim();
 		if(tmp){
 			dataSet[i]='　　'+tmp;
 			i++;
@@ -10,8 +10,8 @@ function copyText(data){
 			dataSet.splice(i,1);
 		}
 	}
-	if(dataSet.length==1 && dataSet[0].length<25){
-		dataSet[0]=dataSet[0].substr(2);
+	if(dataSet.length==1 && getByteLength(dataSet[0])<=54){//title directed
+		dataSet[0]=dataSet[0].substr(2).replace(/([^\w])\s/g,'$1').replace(/\s(?=[^\w])/g,'');//remove space
 	}
 	el.value=dataSet.join('\n\n');
 	el.select();
@@ -61,6 +61,10 @@ function showNotification(msg,delay){
 		};
 	}
 	notify.show();
+}
+
+function getByteLength(str){
+	return str.replace(/[^\u0000-\u00ff]/g,'xx').length;
 }
 
 chrome.extension.onRequest.addListener(function(request){
