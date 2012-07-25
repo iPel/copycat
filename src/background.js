@@ -11,7 +11,12 @@ function copyText(data){
 		}
 	}
 	if(dataSet.length==1 && getByteLength(dataSet[0])<=54){//title directed
-		dataSet[0]=dataSet[0].substr(2).replace(/([^\w])\s/g,'$1').replace(/\s(?=[^\w])/g,'');//remove space
+		var tdata=dataSet[0].substr(2),
+			slen=(tdata.match(/\s/g) || []).length;
+		if(slen>2 && tdata.length<slen*3){
+			tdata=tdata.replace(/([^\w])\s/g,'$1').replace(/\s(?=[^\w])/g,'');//remove space
+		}
+		dataSet[0]=tdata;
 	}
 	el.value=dataSet.join('\n\n');
 	el.select();
