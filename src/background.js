@@ -38,7 +38,7 @@ xhr.onreadystatechange=function(){
 					data.push(result[i][0]);
 				}
 				copyText(data.join(''));
-				showNotification('转换成功,可以粘贴了',2000);
+				//showNotification('转换成功,可以粘贴了',2000);
 			}catch(e){
 				showNotification('转换失败>﹏﹏<',2000);
 			}
@@ -78,7 +78,7 @@ chrome.extension.onRequest.addListener(function(request){
 		xhr.abort();
 		copyText(text);
 		if(testTrad(text)){
-			showNotification('复制内容包括繁体字,转换中...',2000);
+			//showNotification('复制内容包括繁体字,转换中...',2000);
 			tranlateTrad(text);
 		}
 	}
