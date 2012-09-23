@@ -1,0 +1,7 @@
+.bigPic .picleft,
+.bigPic .picright{
+	display: none !important;
+}
+.bigPic img{
+	cursor: default !important;
+}
