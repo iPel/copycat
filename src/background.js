@@ -1,4 +1,5 @@
 var el=document.getElementById('text');
+var stage=document.getElementById('stage');
 function copyText(data){
 	var dataSet=data.match(/[^\n\r]+/g);
 	for(var i=0,tmp;i<dataSet.length;){
@@ -75,11 +76,43 @@ function getByteLength(str){
 chrome.extension.onRequest.addListener(function(request){
 	if(request.cmd == "copy" && request.data){
 		var text=request.data;
-		xhr.abort();
+		xhr.abort(); 
 		copyText(text);
 		if(testTrad(text)){
 			//showNotification('复制内容包括繁体字,转换中...',2000);
 			tranlateTrad(text);
 		}
 	}
+});
+function resizeImage($img,width,height){
+	stage.width = width;
+	stage.height = height;
+	var context = stage.getContext('2d');
+	context.drawImage($img,0,0,width,height);
+	return stage.toDataURL('image/jpeg');
+}
+function saveImage(url,name){
+	var node = document.createElement('a');
+	node.href=url;
+	node.download=name+'.jpg';
+	node.click();
+}
+chrome.contextMenus.create({
+	type: "normal",
+	title: "图片另存为(&V)...",
+	contexts: ["image"],
+	onclick: function(option){
+		var img = new Image(),
+			url = option.srcUrl,
+			filename = url.replace(/^.*\//,'').split('.')[0];
+		img.onload = function(){
+			if(img.width<=500){
+				saveImage(url,filename);
+			}else{
+				saveImage(resizeImage(img,500,Math.round(img.height*500/img.width)),filename);
+			}
+		};
+		img.src = url;
+	}
+}, function(){
 });
