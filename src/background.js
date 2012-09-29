@@ -104,7 +104,7 @@ function resizeImage($img,width,height){
 	stage.height = height;
 	var context = stage.getContext('2d');
 	context.drawImage($img,0,0,width,height);
-	return stage.toDataURL('image/jpeg');
+	return stage.toDataURL('image/jpeg',.8);
 }
 function saveImage(url,name,id){
 	chrome.tabs.executeScript(id,{
