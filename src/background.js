@@ -73,7 +73,8 @@ function getByteLength(str){
 	return str.replace(/[^\u0000-\u00ff]/g,'xx').length;
 }
 
-chrome.extension.onRequest.addListener(function(request){
+chrome.extension.onRequest.addListener(function(request,sender){
+	//console.info(request,s);
 	if(request.cmd == "copy" && request.data){
 		var text=request.data;
 		xhr.abort(); 
@@ -82,8 +83,22 @@ chrome.extension.onRequest.addListener(function(request){
 			//showNotification('复制内容包括繁体字,转换中...',2000);
 			tranlateTrad(text);
 		}
+	}else if(request.cmd == "getImage"){
+		getImage(request.data,sender.tab.id);
 	}
 });
+function getImage(url,id){
+	var img = new Image(),
+		filename = url.replace(/^.*\//,'').split('.')[0];
+	img.onload = function(){
+		if(img.width<=500){
+			saveImage(url,filename,id);
+		}else{
+			saveImage(resizeImage(img,500,Math.round(img.height*500/img.width)),filename,id);
+		}
+	};
+	img.src = url;
+}
 function resizeImage($img,width,height){
 	stage.width = width;
 	stage.height = height;
@@ -91,40 +106,31 @@ function resizeImage($img,width,height){
 	context.drawImage($img,0,0,width,height);
 	return stage.toDataURL('image/jpeg');
 }
-function saveImage(url,name){
-	var node = document.createElement('a');
-	node.href=url;
-	node.download=name+'.jpg';
-	node.click();
+function saveImage(url,name,id){
+	chrome.tabs.executeScript(id,{
+		code: "var node = document.createElement('a');\
+			node.href='"+url+"';\
+			node.download='"+name+".jpg';\
+			node.click();"
+	});
 }
 chrome.contextMenus.create({
 	type: "normal",
 	title: "图片另存为(&V)...",
 	contexts: ["image"],
-	onclick: function(option){
-		var img = new Image(),
-			url = option.srcUrl,
-			filename = url.replace(/^.*\//,'').split('.')[0];
-		img.onload = function(){
-			if(img.width<=500){
-				saveImage(url,filename);
-			}else{
-				saveImage(resizeImage(img,500,Math.round(img.height*500/img.width)),filename);
-			}
-		};
-		img.src = url;
+	onclick: function(option,tab){
+		getImage(option.srcUrl,tab.id);
 	}
 }, function(){
 });
-// chrome.contextMenus.create({
-// 	type: "normal",
-// 	title: "获取本页最大图片...",
-// 	contexts: ["page","selection","link","editable","video","audio"],
-// 	onclick: function(option,tab){
-// 		chrome.tabs.executeScript(tab.id,{
-// 			code: 'alert(location.href)'
-// 		});
-
-// 	}
-// }, function(){
-// });
+chrome.contextMenus.create({
+	type: "normal",
+	title: "获取本页最大图片...",
+	contexts: ["page","selection","link","editable","video","audio"],
+	onclick: function(option,tab){
+		chrome.tabs.executeScript(tab.id,{
+			file: './getlargestimage.js'
+		});
+	}
+}, function(){
+});
