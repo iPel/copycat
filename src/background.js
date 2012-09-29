@@ -116,3 +116,15 @@ chrome.contextMenus.create({
 	}
 }, function(){
 });
+// chrome.contextMenus.create({
+// 	type: "normal",
+// 	title: "获取本页最大图片...",
+// 	contexts: ["page","selection","link","editable","video","audio"],
+// 	onclick: function(option,tab){
+// 		chrome.tabs.executeScript(tab.id,{
+// 			code: 'alert(location.href)'
+// 		});
+
+// 	}
+// }, function(){
+// });

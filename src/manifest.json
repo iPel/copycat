@@ -6,7 +6,7 @@
     "default_icon": "logo.gif"
   },
   "background_page": "background.html",
-  "permissions": ["http://translate.google.cn/*","notifications","contextMenus"],
+  "permissions": ["<all_urls>","http://translate.google.cn/*","notifications","contextMenus","tabs"],
   "icons": {
 	"16": "16.gif"
   },
