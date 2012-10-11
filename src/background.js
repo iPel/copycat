@@ -89,12 +89,14 @@ chrome.extension.onRequest.addListener(function(request,sender){
 });
 function getImage(url,id){
 	var img = new Image(),
-		filename = url.replace(/^.*\//,'').split('.')[0];
+		filename = url.replace(/^.*\//,'').split('.')[0],
+		m = url.match(/\.(jpg|jpeg|png|gif)\b/ig),
+		ext = m?m[0]:'jpg';
 	img.onload = function(){
 		if(img.width<=500){
-			saveImage(url,filename,id);
+			saveImage(url,filename,ext,id);
 		}else{
-			saveImage(resizeImage(img,500,Math.round(img.height*500/img.width)),filename,id);
+			saveImage(resizeImage(img,500,Math.round(img.height*500/img.width)),filename,'jpg',id);
 		}
 	};
 	img.src = url;
@@ -106,12 +108,14 @@ function resizeImage($img,width,height){
 	context.drawImage($img,0,0,width,height);
 	return stage.toDataURL('image/jpeg',.8);
 }
-function saveImage(url,name,id){
+function saveImage(url,name,ext,id){
 	chrome.tabs.executeScript(id,{
 		code: "var node = document.createElement('a');\
 			node.href='"+url+"';\
-			node.download='"+name+".jpg';\
-			node.click();"
+			node.download='"+name+"."+ext+"';\
+			var click=document.createEvent('MouseEvent');\
+			click.initEvent('click');\
+			node.dispatchEvent(click);"
 	});
 }
 chrome.contextMenus.create({
