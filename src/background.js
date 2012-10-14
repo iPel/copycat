@@ -93,10 +93,12 @@ function getImage(url,id){
 		m = url.match(/\.(jpg|jpeg|png|gif)\b/ig),
 		ext = m?m[0]:'.jpg';
 	img.onload = function(){
-		if(img.width<=500){
+		if(img.width<=500 && img.height<=500){
 			saveImage(url,filename,ext,id);
-		}else{
+		}else if(img.width>img.height){
 			saveImage(resizeImage(img,500,Math.round(img.height*500/img.width)),filename,'.jpg',id);
+		}else{
+			saveImage(resizeImage(img,Math.round(img.width*500/img.height),500),filename,'.jpg',id);
 		}
 	};
 	img.src = url;
@@ -105,7 +107,11 @@ function resizeImage($img,width,height){
 	stage.width = width;
 	stage.height = height;
 	var context = stage.getContext('2d');
+	context.globalCompositeOperation="source-over";
 	context.drawImage($img,0,0,width,height);
+	context.globalCompositeOperation="destination-over";
+	context.fillStyle="#fff";
+	context.fillRect(0,0,width,height);
 	return stage.toDataURL('image/jpeg',.8);
 }
 function saveImage(url,name,ext,id){
