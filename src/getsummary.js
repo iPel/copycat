@@ -29,7 +29,8 @@
 		cmd: "getSummary",
 		data: {
 			url: largestImg.src,
-			text: summary
+			text: summary.trim(),
+			page: location.href
 		}
 	});
 })();

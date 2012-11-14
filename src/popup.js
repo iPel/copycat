@@ -61,9 +61,9 @@
 			hide($page);
 			show($stopBtn);
 			show($progressBar);
-			checkState();
 			chrome.tabs.getSelected(null,function(tab){
 				bgPage.CC.image.startImgTool(pageCount,tab.id);
+				checkState();
 			});
 		}
 	}, false);

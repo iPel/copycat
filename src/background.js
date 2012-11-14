@@ -148,9 +148,13 @@
 			_newWindow = window.open();
 			_newWindow.document.title = '图集工具输出';
 			_newWindow.document.write('<style>\
-					div { border:1px solid #ccc; margin:5px 10px; padding:10px; min-height:100px; }\
-					a { float:left; text-decoration:none; margin-right:10px }\
-					a img { max-height:100px; max-width:100px; }\
+					div { border:1px solid #ccc; margin:5px 10px; padding:10px; white-space:pre-line; }\
+					img { max-height:100px; max-width:100px; }\
+					em { color:#933; }\
+					.wrap { float:left; margin-right:10px }\
+					.link { padding:0; margin:0; clear:both; display:block; overflow:hidden; }\
+					.link a { text-decoration:none; color:#999; font-size:10px; white-space:nowrap; }\
+					.link a:hover { color:#99c; }\
 				</style>');
 		}
 		return _newWindow;
@@ -161,13 +165,30 @@
 			m = url.match(/\.(jpg|jpeg|png|gif)\b/ig),
 			ext = m?m[0]:'.jpg';
 		img.onload = function(){
+			var option;
 			if(img.width<=500 && img.height<=500){
-				saveImage(url,filename,ext,id);
+				option = {
+					imgData: url,
+					name: filename,
+					ext: ext,
+					id: id
+				};
 			}else if(img.width>img.height){
-				saveImage(resizeImage(img,500,Math.round(img.height*500/img.width)),filename,'.jpg',id);
+				option = {
+					imgData: resizeImage(img,500,Math.round(img.height*500/img.width)),
+					name: filename,
+					ext: '.jpg',
+					id: id
+				};
 			}else{
-				saveImage(resizeImage(img,Math.round(img.width*500/img.height),500),filename,'.jpg',id);
+				option = {
+					imgData: resizeImage(img,Math.round(img.width*500/img.height),500),
+					name: filename,
+					ext: '.jpg',
+					id: id
+				};
 			}
+			saveImage(option);
 		};
 		img.src = url;
 	};
@@ -182,47 +203,74 @@
 		context.fillRect(0,0,width,height);
 		return $canvas.toDataURL('image/jpeg',.8);
 	};
-	var saveImage = function(imgData,name,ext,id){
-		chrome.tabs.executeScript(id,{
+	var saveImage = function(option){
+		chrome.tabs.executeScript(option.id,{
 			code: "var node = document.createElement('a');\
-				node.href='"+imgData+"';\
-				node.download='"+name+ext+"';\
+				node.href='"+option.imgData+"';\
+				node.download='"+option.name+option.ext+"';\
 				var click=document.createEvent('MouseEvent');\
 				click.initEvent('click');\
 				node.dispatchEvent(click);"
 		});
 	};
-	var getSummary = function(url,text){
+	var getSummary = function(url,text,page){
 		var img = new Image(),
 			filename = url.replace(/^.*\//,'').split('.')[0],
 			m = url.match(/\.(jpg|jpeg|png|gif)\b/ig),
 			ext = m?m[0]:'.jpg';
 		img.onload = function(){
-			if(img.width<=500 && img.height<=500){
-				outputSummary(url,filename,ext,text,url);
-			}else if(img.width>img.height){
-				outputSummary(resizeImage(img,500,Math.round(img.height*500/img.width)),filename,'.jpg',text,url);
-			}else{
-				outputSummary(resizeImage(img,Math.round(img.width*500/img.height),500),filename,'.jpg',text,url);
+			var option;
+			if(img.width * img.height < 40000){
+				text = '<em>图片太小请检查</em>' + text;
 			}
+			if(img.width<=500 && img.height<=500){
+				option = {
+					imgData: url,
+					name: filename,
+					ext: ext,
+					text: text,
+					origin: url,
+					page: page
+				};
+			}else if(img.width>img.height){
+				option = {
+					imgData: resizeImage(img,500,Math.round(img.height*500/img.width)),
+					name: filename,
+					ext: '.jpg',
+					text: text,
+					origin: url,
+					page: page
+				};
+			}else{
+				option = {
+					imgData: resizeImage(img,Math.round(img.width*500/img.height),500),
+					name: filename,
+					ext: '.jpg',
+					text: text,
+					origin: url,
+					page: page
+				};
+			}
+			outputSummary(option);
 		};
 		img.src = url;
 	}
-	var outputSummary = function(imgData,filename,ext,text,origin){
-		getNewWindow().document.write('<div><a href="'+imgData+'" download="'+name+ext+'" title="点击保存">\
-			<img src="'+imgData+'" /></a>' + text + '</div>');
+	var outputSummary = function(option){
+		getNewWindow().document.write('<div>\
+			<a class="wrap" href="'+option.imgData+'" download="'+option.name+option.ext+'" title="点击保存"><img src="'+option.imgData+'" /></a>' +
+			option.text + '<p class="link"><a target="_blank" href="'+option.page+'">'+option.page+'</a></p></div>');
 		pageLeft--;
 		if(pageLeft && autoSaveState === 1){
 			chrome.tabs.executeScript(currentTabId,{
-				code: "var imgs = document.querySelectorAll('img[src]'),target;\
+				code: "try{var imgs = document.querySelectorAll('img[src]'),target;\
 					for(var i=0,len=imgs.length;i<len;i++){\
-						if(imgs[i].src=='"+origin+"'){\
+						if(imgs[i].src=='"+option.origin+"'){\
 							target = imgs[i];\
 							break;\
 						}\
 					}\
 					target.scrollIntoView();\
-					var x = target.offsetLeft + target.offsetWidth * .75,\
+					var x = target.offsetLeft + target.offsetWidth * .8,\
 						y = target.offsetTop + target.offsetHeight * .5;\
 					while(target = target.offsetParent){\
 						x += target.offsetLeft;\
@@ -230,8 +278,9 @@
 					}\
 					var node = document.elementFromPoint(x - pageXOffset, y - pageYOffset),\
 						click=document.createEvent('MouseEvent');\
-					click.initEvent('click');\
-					node.dispatchEvent(click);"
+					click.initMouseEvent('click', true, true, window, 1, 0, 0,\
+						Math.round(node.offsetWidth * .8), Math.round(node.offsetHeight * .5), false, false, false, false, 0, null);\
+					node.dispatchEvent(click);}catch(e){alert('出错了!请手动点下一页');}"
 			});
 		}else{
 			context.stopImgTool();
@@ -251,7 +300,7 @@
 		autoSaveState = 1;
 		chrome.tabs.executeScript(currentTabId,{
 			code: "window.addEventListener('hashchange',function(e){\
-					setTimeout(function(){chrome.extension.sendRequest({cmd: 'ready'});}, 1000);\
+					chrome.extension.sendRequest({cmd: 'ready'});\
 				},false);"
 		});
 		stepImgTool();
@@ -277,11 +326,11 @@
 	});
 	CC.addCmd('ready', function(data,sender){
 		if(autoSaveState && sender.tab.id === currentTabId){
-			stepImgTool();
+			setTimeout(stepImgTool, 1000);
 		}
 	});
 	CC.addCmd('getSummary', function(data,sender){
-		getSummary(data.url, data.text);
+		getSummary(data.url, data.text, data.page);
 	});
 	chrome.contextMenus.create({
 		type: "normal",

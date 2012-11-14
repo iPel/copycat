@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded',function(e){
+document.addEventListener('DOMContentLoaded', function(){
 	chrome.extension.sendRequest({
 		cmd: 'ready'
 	});
-},false);
+}, false);
