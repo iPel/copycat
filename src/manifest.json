@@ -1,12 +1,15 @@
 {
+  "manifest_version": 2,
   "name": "复制助手",
-  "version": "1.9",
+  "version": "2.0",
   "description": "复制助手",
   "browser_action": {
     "default_icon": "logo.gif",
-    "popup": "popup.html"
+    "default_popup": "popup.html"
   },
-  "background_page": "background.html",
+  "background": {
+    "scripts": ["background.js"]
+  },
   "permissions": ["<all_urls>","http://translate.google.cn/*","notifications","contextMenus","tabs"],
   "icons": {
 	"16": "16.gif"
@@ -14,9 +17,15 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content_script.js"],
+      "js": ["content_keydown.js"],
       "run_at": "document_start",
       "all_frames": true
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_domready.js"],
+      "run_at": "document_start",
+      "all_frames": false
     }
   ]
 }

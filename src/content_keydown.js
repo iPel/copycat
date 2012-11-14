@@ -3,7 +3,7 @@ window.addEventListener('keydown',function(e){
 		e.preventDefault();
 		var data=window.getSelection().toString();
 		chrome.extension.sendRequest({
-			cmd: "copy",
+			cmd: 'copy',
 			data: data
 		});
 	}

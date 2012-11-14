@@ -7,26 +7,28 @@
 		body{
 			font-size: 12px;
 		}
+		form{
+			margin: 0;
+			padding: 0;
+		}
 	</style>
 </head>
 <body>
-	<fieldset>
-		<legend>设置</legend>
-		自动前缀:<input id="prefix" type="text" value="" />
-	</fieldset>
-	<fieldset>
-		<legend>工具</legend>
-	</fieldset>
-	<script>
-		var prefix = document.getElementById('prefix');
-		prefix.value = localStorage.getItem('prefix') || '';
-		window.onunload = function(){
-			chrome.extension.getBackgroundPage().onPrefixChange(prefix.value);
-			// sendRequest({
-			// 	cmd: "prefixChange",
-			// 	data: prefix.value
-			// });
-		};
-	</script>
+	<form id="setting">
+		<fieldset>
+			<legend>设置</legend>
+			自动前缀:<input id="prefix" type="text" value="" />
+		</fieldset>
+	</form>
+	<form id="imgtool">
+		<fieldset>
+			<legend>图集工具</legend>
+			总页数:<input id="page" type="text" value="1" />
+			<progress id="progress" max="100" value="0"></progress>
+			<input id="submit" type="submit" value="开始" />
+			<input id="stop" type="button" value="停止" />
+		</fieldset>
+	</form>
+	<script src="popup.js"></script>
 </body>
 </html>
