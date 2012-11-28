@@ -8,7 +8,7 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js","bg_texttool.js","bg_imgtool.js"]
   },
   "permissions": ["<all_urls>","http://translate.google.cn/*","notifications","contextMenus","tabs"],
   "icons": {
@@ -17,7 +17,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content_keydown.js"],
+      "js": ["content_start.js"],
       "run_at": "document_start",
       "all_frames": true
     },

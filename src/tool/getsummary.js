@@ -6,11 +6,11 @@
 	}
 	var currentImg,currentSize,rate;
 	var largestImg=imgs[0],
-		size=largestImg.width*largestImg.height;
+		size=largestImg.naturalWidth*largestImg.naturalHeight;
 	for(var i=1,len=imgs.length;i<len;i++){
 		currentImg=imgs[i];
-		currentSize=currentImg.width*currentImg.height;
-		rate=currentImg.width/currentImg.height;
+		currentSize=currentImg.naturalWidth*currentImg.naturalHeight;
+		rate=currentImg.naturalWidth/currentImg.naturalHeight;
 		if(currentSize > size && rate<3 && rate>.33){
 			largestImg = currentImg;
 			size = currentSize;
@@ -25,7 +25,7 @@
 		}
 		target = target.parentNode;
 	}
-	chrome.extension.sendRequest({
+	chrome.extension.sendMessage({
 		cmd: "getSummary",
 		data: {
 			url: largestImg.src,

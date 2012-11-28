@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
-	chrome.extension.sendRequest({
+	chrome.extension.sendMessage({
 		cmd: 'ready'
 	});
 }, false);
