@@ -12,9 +12,11 @@
 	$prefix.addEventListener('change', onChange, false);
 	$settingForm.addEventListener('submit',function(e){
 		e.preventDefault();
-		onChange();
+		//onChange();
+		window.removeEventListener('unload', onChange, false);
 		window.close();
 	}, false);
+	window.addEventListener('unload', onChange, false);
 })();
 
 (function(){

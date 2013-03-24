@@ -1,17 +1,21 @@
 var point;
 var getImageByPoint = function(){
 	if(!point){
-		alert('你都没有点到图片!');
+		return;
 	}
 	var targets = [],el;
-	window.scrollTo(point.x,point.y);
+	// window.scrollTo(point.x,point.y);
 	for(;;){
 		el = document.elementFromPoint(point.x - window.pageXOffset, point.y - window.pageYOffset);
-		if(el.tagName === 'IMG'){
-			chrome.extension.sendMessage({
-				cmd: "getImage",
-				data: el.src
-			});
+		if(!el){
+			 break;
+		}else if(el.tagName === 'IMG'){
+			setTimeout(function(){
+				chrome.extension.sendMessage({
+					cmd: "getImage",
+					data: el.src
+				});
+			},0);
 			break;
 		}else if(el === document.body){
 			alert('你都没有点到图片!');
@@ -38,16 +42,13 @@ window.addEventListener('keydown',function(e){
 		});
 	}
 },true);
-window.addEventListener('mousedown',function(e){
-	if(e.button === 2){
-		point = {
-			x:e.pageX,
-			y:e.pageY
-		}
-	}else{
-		point = null;
+window.addEventListener('contextmenu',function(e){
+	point = {
+		x:e.pageX,
+		y:e.pageY
 	}
 },true);
+window.addEventListener('click',function(){point = null;},false);
 chrome.extension.onMessage.addListener(function(request, sender){
 	if(request.cmd === 'getImageByPoint'){
 		getImageByPoint();

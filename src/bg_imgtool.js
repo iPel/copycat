@@ -218,9 +218,11 @@
 			if(option.mediaType === 'image'){
 				getImage(option.srcUrl,tab.id);
 			}else{
+				setTimeout(function(){
 				chrome.tabs.sendMessage(tab.id, {
 					cmd: 'getImageByPoint'
 				});
+			},0);
 			}
 		}
 	}, EMPTY_FUNC);
