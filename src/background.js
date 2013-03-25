@@ -18,11 +18,12 @@
 			};
 		}
 		notify.show();
-	}
-	chrome.extension.onMessage.addListener(function(request,sender){
+	};
+	context.handleCmd = function(request,sender){
 		//console.info(request);
 		if(request.cmd in remoteCommands){
 			remoteCommands[request.cmd](request.data,sender);
 		}
-	});
+	};
+	chrome.extension.onMessage.addListener(context.handleCmd);
 })(window);

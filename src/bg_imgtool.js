@@ -13,7 +13,7 @@
 		if(e.ctrlKey && e.keyCode===67 && !e.shiftKey && !e.altKey){
 			e.preventDefault();
 			var data=e.currentTarget.getSelection().toString();
-			chrome.extension.sendMessage({
+			CC.handleCmd({
 				cmd: 'copy',
 				data: data
 			});
