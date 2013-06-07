@@ -3,7 +3,11 @@
 	var context = ns['CC'] = {};
 	var remoteCommands = {};
 	context.addCmd = function(cmd, handler){
-		remoteCommands[cmd] = handler;
+		if(remoteCommands[cmd]){
+			remoteCommands[cmd].push(handler);
+		}else{
+			remoteCommands[cmd] = [handler];
+		}
 	};
 	context.showNotification = function(msg,delay){
 		var notify=webkitNotifications.createNotification('','',msg),handler;
@@ -22,7 +26,9 @@
 	context.handleCmd = function(request,sender){
 		//console.info(request);
 		if(request.cmd in remoteCommands){
-			remoteCommands[request.cmd](request.data,sender);
+			for(var cmds = remoteCommands[request.cmd], i = 0, len = cmds.length; i < len; i++){
+				cmds[i](request.data,sender);
+			}
 		}
 	};
 	chrome.extension.onMessage.addListener(context.handleCmd);

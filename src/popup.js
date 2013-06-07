@@ -2,11 +2,12 @@
 	"use strict";
 	var $prefix = document.getElementById('prefix'),
 		$settingForm = document.getElementById('setting'),
+		$showKey = document.getElementById('showKey'),
 		bgPage = chrome.extension.getBackgroundPage();
 
 	var onChange = function(){
 		var prefixStr = $prefix.value.replace(/\\n/g,'\n');
-		bgPage.CC.text.onPrefixChange(prefixStr);
+		bgPage.CC.text.onConfigChange('prefix', prefixStr);
 	};
 	$prefix.value = (localStorage.getItem('prefix') || '').replace(/\n/g,'\\n');
 	$prefix.addEventListener('change', onChange, false);
@@ -17,6 +18,11 @@
 		window.close();
 	}, false);
 	window.addEventListener('unload', onChange, false);
+
+	$showKey.checked = Boolean(localStorage.getItem('showKey'));
+	$showKey.addEventListener('click', function(){
+		bgPage.CC.text.onConfigChange('showKey', $showKey.checked);
+	}, false);
 })();
 
 (function(){

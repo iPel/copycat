@@ -2,12 +2,19 @@
 	"use strict";
 	var context = ns['text'] = {};
 	var $text = document.createElement('textarea'),
+		showKey = Boolean(localStorage.getItem('showKey')),
 		prefixStr = localStorage.getItem('prefix') || '',
 		autoPrefix = true;
 	var SPACE = '　　';
 
+	
+	var tMarkStr = '「」『』',
+		sMarkStr = '“”‘’',
+		tMarkReg = new RegExp('['+tMarkStr+']','g');
 	var copyText = function(data){
-		data = data.replace(/「/g, '“').replace(/」/g, '”'); //标点预处理
+		data = data.replace(tMarkReg, function(ch){
+			return sMarkStr.charAt(tMarkStr.indexOf(ch)) || ch;
+		}); //标点预处理
 		var dataSet=data.match(/[^\n\r]+/g) || []; //断句, match比split快一点点
 		for(var i=0,tmp;i<dataSet.length;){
 			tmp=dataSet[i].replace(/[\s]+/g,' ').trim();
@@ -36,7 +43,17 @@
 					dataSet[0]=SPACE+'原标题：' + m[1];
 					dataSet[1]=prefixStr+dataSet[1];
 				}else{
-					dataSet[0]=SPACE+'原标题：\n\n'+SPACE+prefixStr+tdata;
+					var ldata = dataSet[dataSet.length - 1];
+					if(/^[\(（].*[\)）]$/.test(ldata)){
+						ldata = ldata.substring(1, ldata.length-1);
+					}
+					m = ldata.match(/^原标题[:：\s]*\[(.*)\]\s*$/) || ldata.match(/^原标题[:：\s]+(.*)/);
+					if(m){
+						dataSet.pop();
+						dataSet.unshift(SPACE+'原标题：' + m[1]);
+					}else{
+						dataSet[0]=SPACE+'原标题：\n\n'+SPACE+prefixStr+tdata;
+					}
 				}
 			}
 		}
@@ -85,12 +102,21 @@
 		return str.replace(/[^\u0000-\u00ff]/g,'xx').length;
 	};
 
-	context.onPrefixChange = function(data){
-		if(prefixStr == data){
-			return;
+	context.onConfigChange = function(key, data){
+		if(key == 'prefix'){
+			if(prefixStr == data){
+				return;
+			}
+			prefixStr = data;
+			localStorage.setItem('prefix',data);
+		}else if(key == 'showKey'){
+			showKey = data;
+			if(data){
+				localStorage.setItem('showKey',1);
+			}else{
+				localStorage.removeItem('showKey');
+			}
 		}
-		prefixStr = data;
-		localStorage.setItem('prefix',data);
 	};
 
 	document.body.appendChild($text);
@@ -105,4 +131,12 @@
 			copyText(text);
 		}
 	});
+	CC.addCmd('ready', function(data,sender){
+		if(showKey){
+			chrome.tabs.executeScript(sender.tab.id,{
+				file: './tool/showkeywords.js'
+			});
+		}
+	});
+
 })(CC);
