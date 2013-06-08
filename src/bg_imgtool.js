@@ -25,8 +25,8 @@
 			_newWindow = window.open();
 			_newWindow.document.title = '图集工具输出';
 			_newWindow.document.write('<style>\
-					div { border:1px solid #ccc; margin:5px 10px; padding:10px; white-space:pre-line; }\
-					img { max-height:100px; max-width:100px; }\
+					div { border:1px solid #ccc; margin:5px auto; padding:10px; white-space:pre-line; max-width:900px; }\
+					img { max-height:250px; max-width:250px; }\
 					em { color:#933; }\
 					.wrap { float:left; margin-right:10px }\
 					.link { padding:0; margin:0; clear:both; display:block; overflow:hidden; }\
@@ -140,25 +140,37 @@
 		pageLeft--;
 		if(pageLeft && autoSaveState === 1){
 			chrome.tabs.executeScript(currentTabId,{
-				code: "try{var imgs = document.querySelectorAll('img[src]'),target;\
-					for(var i=0,len=imgs.length;i<len;i++){\
-						if(imgs[i].src=='"+option.origin+"'){\
-							target = imgs[i];\
+				code: "try{\
+					var a = document.querySelectorAll('a[href]'),target;\
+					for(var i=0,len=a.length;i<len;i++){\
+						if((/下一页|下一张/).test(a[i].title || a[i].innerText)){\
+							target = a[i];\
 							break;\
 						}\
 					}\
-					target.scrollIntoView();\
-					var x = target.offsetLeft + target.offsetWidth * .8,\
-						y = target.offsetTop + target.offsetHeight * .5;\
-					while(target = target.offsetParent){\
-						x += target.offsetLeft;\
-						y += target.offsetTop;\
-					}\
-					var node = document.elementFromPoint(x - pageXOffset, y - pageYOffset),\
-						click=document.createEvent('MouseEvent');\
-					click.initMouseEvent('click', true, true, window, 1, 0, 0,\
-						Math.round(node.offsetWidth * .8), Math.round(node.offsetHeight * .5), false, false, false, false, 0, null);\
-					node.dispatchEvent(click);}catch(e){alert('出错了!请手动点下一页');}"
+					if(target){\
+						target.click();\
+					}else{\
+						var imgs = document.querySelectorAll('img[src]');\
+						for(var i=0,len=imgs.length;i<len;i++){\
+							if(imgs[i].src=='"+option.origin+"'){\
+								target = imgs[i];\
+								break;\
+							}\
+						}\
+						target.scrollIntoView();\
+						var x = target.offsetLeft + target.offsetWidth * .75,\
+							y = target.offsetTop + target.offsetHeight * .5;\
+						while(target = target.offsetParent){\
+							x += target.offsetLeft;\
+							y += target.offsetTop;\
+						}\
+						var node = document.elementFromPoint(x - pageXOffset, y - pageYOffset),\
+							click=document.createEvent('MouseEvent');\
+						click.initMouseEvent('click', true, true, window, 1, 0, 0,\
+							Math.round(node.offsetWidth * .75), Math.round(node.offsetHeight * .5), false, false, false, false, 0, null);\
+						node.dispatchEvent(click);\
+					}}catch(e){alert('出错了!请手动点下一页');}"
 			});
 		}else{
 			context.stopImgTool();

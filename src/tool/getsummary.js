@@ -20,8 +20,8 @@
 		return nValue;
 	}
 	var getImageSize = function(img){
-		var width = Math.max(img.width, img.naturalWidth, getStyle(img, 'width')) || Math.max(getStyle(img.parentNode, 'width'), 20);
-		var height = Math.max(img.height, img.naturalHeight, getStyle(img, 'height')) || Math.max(getStyle(img.parentNode, 'height'), 20);
+		var width = Math.max(img.width || img.naturalWidth, getStyle(img, 'width')) || Math.max(getStyle(img.parentNode, 'width'), 20);
+		var height = Math.max(img.height || img.naturalHeight, getStyle(img, 'height')) || Math.max(getStyle(img.parentNode, 'height'), 20);
 		return width * height;
 	}
 	var imgs=document.images;
@@ -52,16 +52,17 @@
 		target = largestImg.parentNode;
 	for(var i=0;i<10 && target;i++){
 		summary = target.innerText;
-		if(summary.length > 10){
+		if(summary.length > 50){
 			break;
 		}
 		target = target.parentNode;
 	}
+	summary = summary.replace(/\n\d+\/\d+\n/g,'\n\n').replace(/\n\d+\/\d+\n/g,'\n\n').trim().replace(/\n+/g,'\n');
 	chrome.extension.sendMessage({
 		cmd: "getSummary",
 		data: {
 			url: largestImg.src,
-			text: summary.trim(),
+			text: summary,
 			page: location.href
 		}
 	});
