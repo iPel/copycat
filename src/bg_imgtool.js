@@ -226,14 +226,4 @@
 			}
 		}
 	}, EMPTY_FUNC);
-	// chrome.contextMenus.create({
-	// 	type: "normal",
-	// 	title: "获取本页最大图片...",
-	// 	contexts: ["page","selection","link","editable","video","audio"],
-	// 	onclick: function(option,tab){
-	// 		chrome.tabs.executeScript(tab.id,{
-	// 			file: './tool/getlargestimage.js'
-	// 		});
-	// 	}
-	// }, EMPTY_FUNC);
 })(CC);

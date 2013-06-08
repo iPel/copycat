@@ -1,17 +1,49 @@
 (function(){
+	var getStyle = function(oElm, strCssRule){
+		if(oElm == null){
+			return 0;
+		}
+		var strValue = '0';
+		if(document.defaultView && document.defaultView.getComputedStyle){
+			strValue = document.defaultView.getComputedStyle(oElm, "").getPropertyValue(strCssRule);
+		}
+		else if(oElm.currentStyle){
+			strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){
+				return p1.toUpperCase();
+			});
+			strValue = oElm.currentStyle[strCssRule];
+		}
+		var nValue = parseInt(strValue, 10);
+		if(isNaN(nValue)){
+			return 0;
+		}
+		return nValue;
+	}
+	var getImageSize = function(img){
+		var width = Math.max(img.width, img.naturalWidth, getStyle(img, 'width')) || Math.max(getStyle(img.parentNode, 'width'), 20);
+		var height = Math.max(img.height, img.naturalHeight, getStyle(img, 'height')) || Math.max(getStyle(img.parentNode, 'height'), 20);
+		return width * height;
+	}
 	var imgs=document.images;
 	if(!imgs.length){
 		alert('木有图片啊!亲!');
 		return;
 	}
-	var currentImg,currentSize,rate;
+	var currentImg,currentSize;
 	var largestImg=imgs[0],
-		size=largestImg.naturalWidth*largestImg.naturalHeight;
+		size=getImageSize(largestImg);
 	for(var i=1,len=imgs.length;i<len;i++){
 		currentImg=imgs[i];
-		currentSize=currentImg.naturalWidth*currentImg.naturalHeight;
-		rate=currentImg.naturalWidth/currentImg.naturalHeight;
-		if(currentSize > size && rate<3 && rate>.33){
+		currentSize=getImageSize(currentImg);
+		if(currentSize > size){
+			var width = currentImg.width || getStyle(currentImg, 'width');
+			var height = currentImg.height || getStyle(currentImg, 'height');
+			if(width && height){
+				var rate = width / height;
+				if(rate > 3 || rate < .33){
+					continue;
+				}
+			}
 			largestImg = currentImg;
 			size = currentSize;
 		}
