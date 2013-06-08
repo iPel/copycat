@@ -31,6 +31,7 @@ var getImageByPoint = function(){
 	for(var target;target = targets.pop();){
 		target.el.style.visibility = target.value;
 	}
+	point = null;
 };
 window.addEventListener('keydown',function(e){
 	if(e.ctrlKey && e.keyCode===67 && !e.shiftKey && !e.altKey){
