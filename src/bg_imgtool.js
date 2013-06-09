@@ -27,7 +27,7 @@
 			_newWindow.document.write('<style>\
 					div { border:1px solid #ccc; margin:5px auto; padding:10px; white-space:pre-line; max-width:900px; }\
 					img { max-height:250px; max-width:250px; }\
-					em { color:#933; }\
+					em { color:#f00; }\
 					.wrap { float:left; margin-right:10px }\
 					.link { padding:0; margin:0; clear:both; display:block; overflow:hidden; }\
 					.link a { text-decoration:none; color:#999; font-size:10px; white-space:nowrap; }\

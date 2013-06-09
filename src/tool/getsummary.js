@@ -57,7 +57,7 @@
 		}
 		target = target.parentNode;
 	}
-	summary = summary.replace(/\n\d+\/\d+\n/g,'\n\n').replace(/\n\d+\/\d+\n/g,'\n\n').trim().replace(/\n+/g,'\n');
+	summary = summary.replace(/\n\d+\/\d+(?=\n)/g,'').trim();
 	chrome.extension.sendMessage({
 		cmd: "getSummary",
 		data: {
