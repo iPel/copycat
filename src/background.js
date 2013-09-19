@@ -27,7 +27,11 @@
 		//console.info(request);
 		if(request.cmd in remoteCommands){
 			for(var cmds = remoteCommands[request.cmd], i = 0, len = cmds.length; i < len; i++){
-				cmds[i](request.data,sender);
+				try{
+					cmds[i](request.data,sender);
+				}catch(e){
+					console.error('error on ' + request.cmd, e);
+				}
 			}
 		}
 	};

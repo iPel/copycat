@@ -39,12 +39,12 @@
 				dataSet[0]=SPACE+tdata;
 			}else{
 				if(tdata.substr(0, 5).indexOf('原标题') !== -1){
-					var m = tdata.replace(/原标题[:：\s]*/, '').match(/^[\(（\[\s]*(.*?)[\)）\]\s]*$/) || [];
-					dataSet[0]=SPACE+'原标题：' + m[1];
-				}else if((ldata = dataSet[dataSet.length - 1]).substr(0, 5).indexOf('原标题') !== -1){
-					var m = ldata.replace(/原标题[:：\s]*/, '').match(/^[\(（\[\s]*(.*?)[\)）\]\s]*$/) || [];
+					//var m = tdata.replace(/原标题[:：\s]*/, '').match(/^[\(（\[\s]*(.*?)[\)）\]\s]*$/) || [];
+					dataSet[0]=SPACE+'原标题：' + trimTitle(tdata);//m[1];
+				}else if((ldata = dataSet[dataSet.length - 1]).indexOf('原标题') !== -1){
+					//var m = ldata.replace(/原标题[:：\s]*/, '').match(/^[\(（\[\s]*(.*?)[\)）\]\s]*$/) || [];
 					dataSet.pop();
-					dataSet.unshift(SPACE+'原标题：' + m[1]);
+					dataSet.unshift(SPACE+'原标题：' + trimTitle(ldata));
 				}else{
 					dataSet.unshift(SPACE+'原标题：');
 				}
@@ -95,6 +95,19 @@
 	var getByteLength = function(str){
 		return str.replace(/[^\u0000-\u00ff]/g,'xx').length;
 	};
+
+	var trimTitle = function(str){
+		var title = str.split(/原标题[:：\s]*/)[1];
+		if(!title){
+			return '';
+		}
+		var left = title.match(/[\(\[\{（【｛]/g) || [],
+			right = title.match(/[\)\]\}）】｝]/g) || [];
+		if(right.length > left.length){
+			title = title.replace(new RegExp('\\s*\\' + right.slice(left.length).join('[^\\)\\]\\}）】｝]*\\') + '[^\\)\\]\\}）】｝]*$'), '');
+		}
+		return title;
+	}
 
 	context.onConfigChange = function(key, data){
 		if(key == 'prefix'){
