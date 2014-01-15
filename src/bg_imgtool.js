@@ -6,7 +6,8 @@
 		pageLeft = -1,
 		pageTotal = 0,
 		currentTabId = -1,
-		_newWindow;
+		_newWindow,
+		saveType = 0; //0: 500x500, 1: 800x800
 	var EMPTY_FUNC = function(){};
 
 	var onNewWindowKeyDown = function(e){
@@ -25,7 +26,7 @@
 			_newWindow = window.open();
 			_newWindow.document.title = '图集工具输出';
 			_newWindow.document.write('<style>\
-					div { border:1px solid #ccc; margin:5px auto; padding:10px; white-space:pre-line; max-width:900px; }\
+					div { border:1px solid #ccc; margin:5px auto; padding:10px; max-width:900px; }\
 					img { max-height:250px; max-width:250px; }\
 					em { color:#f00; }\
 					.wrap { float:left; margin-right:10px }\
@@ -41,10 +42,16 @@
 		var img = new Image(),
 			filename = url.replace(/^.*\//,'').split('.')[0],
 			m = url.match(/\.(jpg|jpeg|png|gif)\b/ig),
-			ext = m?m[0]:'.jpg';
+			ext = m?m[0]:'.jpg',
+			maxWidth, maxHeight;
+		if (saveType == 1) {
+			maxWidth = maxHeight = 800;
+		} else {
+			maxWidth = maxHeight = 500;
+		}
 		img.onload = function(){
 			var option;
-			if(img.width<=500 && img.height<=500){
+			if(img.width<=maxWidth && img.height<=maxHeight){
 				option = {
 					imgData: url,
 					name: filename,
@@ -53,14 +60,14 @@
 				};
 			}else if(img.width>img.height){
 				option = {
-					imgData: resizeImage(img,500,Math.round(img.height*500/img.width)),
+					imgData: resizeImage(img,maxWidth,Math.round(img.height*maxWidth/img.width)),
 					name: filename,
 					ext: '.jpg',
 					id: id
 				};
 			}else{
 				option = {
-					imgData: resizeImage(img,Math.round(img.width*500/img.height),500),
+					imgData: resizeImage(img,Math.round(img.width*maxHeight/img.height),maxHeight),
 					name: filename,
 					ext: '.jpg',
 					id: id
@@ -95,13 +102,15 @@
 		var img = new Image(),
 			filename = url.replace(/^.*\//,'').split('.')[0],
 			m = url.match(/\.(jpg|jpeg|png|gif)\b/ig),
-			ext = m?m[0]:'.jpg';
+			ext = m?m[0]:'.jpg',
+			maxWidth = 800,
+			maxHeight = 800;
 		img.onload = function(){
 			var option;
 			if(img.width * img.height < 40000){
 				text = '<em>图片太小请检查</em>' + text;
 			}
-			if(img.width<=500 && img.height<=500){
+			if(img.width<=maxWidth && img.height<=maxHeight){
 				option = {
 					imgData: url,
 					name: filename,
@@ -112,7 +121,7 @@
 				};
 			}else if(img.width>img.height){
 				option = {
-					imgData: resizeImage(img,500,Math.round(img.height*500/img.width)),
+					imgData: resizeImage(img,maxWidth,Math.round(img.height*maxWidth/img.width)),
 					name: filename,
 					ext: '.jpg',
 					text: text,
@@ -121,7 +130,7 @@
 				};
 			}else{
 				option = {
-					imgData: resizeImage(img,Math.round(img.width*500/img.height),500),
+					imgData: resizeImage(img,Math.round(img.width*maxHeight/img.height),maxHeight),
 					name: filename,
 					ext: '.jpg',
 					text: text,
@@ -221,6 +230,9 @@
 	});
 	CC.addCmd('getSummary', function(data,sender){
 		getSummary(data.url, data.text, data.page);
+	});
+	CC.addCmd('setPicFlag', function(data, sender){
+		saveType = data ? 1 : 0;
 	});
 	chrome.contextMenus.create({
 		type: "normal",

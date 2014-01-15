@@ -47,7 +47,11 @@ window.addEventListener('contextmenu',function(e){
 	point = {
 		x:e.pageX,
 		y:e.pageY
-	}
+	};
+	chrome.extension.sendMessage({
+		cmd: 'setPicFlag',
+		data: e.ctrlKey
+	});
 },true);
 window.addEventListener('click',function(){point = null;},false);
 chrome.extension.onMessage.addListener(function(request, sender){

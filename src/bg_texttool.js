@@ -40,15 +40,18 @@
 			}else{
 				if(tdata.substr(0, 5).indexOf('原标题') !== -1){
 					//var m = tdata.replace(/原标题[:：\s]*/, '').match(/^[\(（\[\s]*(.*?)[\)）\]\s]*$/) || [];
-					dataSet[0]=SPACE+'原标题：' + trimTitle(tdata);//m[1];
+					dataSet[0] = SPACE+'原标题：' + trimTitle(tdata);//m[1];
+					dataSet[1] = prefixStr + dataSet[1];
 				}else if((ldata = dataSet[dataSet.length - 1]).indexOf('原标题') !== -1){
 					//var m = ldata.replace(/原标题[:：\s]*/, '').match(/^[\(（\[\s]*(.*?)[\)）\]\s]*$/) || [];
 					dataSet.pop();
-					dataSet.unshift(SPACE+'原标题：' + trimTitle(ldata));
+					dataSet.unshift(SPACE + '原标题：' + trimTitle(ldata));
+					dataSet[1] = prefixStr + dataSet[1];
 				}else{
-					dataSet.unshift(SPACE+'原标题：');
+					//do not add empty prefix
+					//dataSet.unshift(SPACE+'原标题：');
+					dataSet[0] = SPACE + prefixStr + tdata;
 				}
-				dataSet[1]=prefixStr+dataSet[1];
 			}
 		}
 		$text.value=dataSet.join('\n\n'+SPACE);
@@ -130,7 +133,7 @@
 	CC.addCmd('copy', function(data,sender){
 		var text=data;
 		xhr.abort();
-		autoPrefix = !(sender && sender.tab && /^file:\/\/\/.+\.txt$/.test(sender.tab.url)); //no prefix for local file
+		autoPrefix = sender && sender.tab && !(/^file:\/\/\/.+\.txt$/.test(sender.tab.url)); //no prefix for local file or plugin
 		if(testTrad(text)){
 			//CC.showNotification('复制内容包括繁体字,转换中...',2000);
 			translateTrad(text);
