@@ -1,9 +1,10 @@
-(function(ns, undefined){
+chrome.storage.local.get(['enableTextTool', 'showKey', 'prefix'], function(items){
 	"use strict";
-	var context = ns['text'] = {};
+	var context = CC['text'] = {};
 	var $text = document.createElement('textarea'),
-		showKey = Boolean(localStorage.getItem('showKey')),
-		prefixStr = localStorage.getItem('prefix') || '',
+		enabled = items['enableTextTool'], // Boolean(localStorage.getItem('enableTextTool')),
+		showKey = items['showKey'], // Boolean(localStorage.getItem('showKey')),
+		prefixStr = items['prefix'] || '', // localStorage.getItem('prefix') || '',
 		autoPrefix = true;
 	var SPACE = '　　';
 
@@ -112,25 +113,7 @@
 		return title;
 	}
 
-	context.onConfigChange = function(key, data){
-		if(key == 'prefix'){
-			if(prefixStr == data){
-				return;
-			}
-			prefixStr = data;
-			localStorage.setItem('prefix',data);
-		}else if(key == 'showKey'){
-			showKey = data;
-			if(data){
-				localStorage.setItem('showKey',1);
-			}else{
-				localStorage.removeItem('showKey');
-			}
-		}
-	};
-
-	document.body.appendChild($text);
-	CC.addCmd('copy', function(data,sender){
+	var cmdCopy = function(data,sender){
 		var text=data;
 		xhr.abort();
 		autoPrefix = sender && sender.tab && !(/^file:\/\/\/.+\.txt$/.test(sender.tab.url)); //no prefix for local file or plugin
@@ -140,13 +123,46 @@
 		}else{
 			copyText(text);
 		}
+	}
+
+	// context.onConfigChange = function(key, data){
+	chrome.storage.onChanged.addListener(function(changes, area){
+		if (area != 'local'){
+			return;
+		}
+		var field;
+		if(field = changes['prefix']){
+			prefixStr = field.newVaule || '';
+			// localStorage.setItem('prefix',data);
+		}
+		if(field = changes['showKey']){
+			showKey = field.newVaule;
+		}
+		if(field = changes['enableTextTool']){
+			enabled = field.newVaule;
+			if(enabled){
+				// localStorage.setItem('enableTextTool',1);
+				CC.addCmd('copy', cmdCopy);
+				chrome.browserAction.setIcon({path:{"19":"19bright.png", "38":"38bright.png"}});
+			}else{
+				// localStorage.removeItem('enableTextTool');
+				CC.removeCmd('copy', cmdCopy);
+				chrome.browserAction.setIcon({path:{"19":"19dark.png", "38":"38dark.png"}});
+			}
+		}
 	});
+
+	document.body.appendChild($text);
+	if(enabled){
+		CC.addCmd('copy', cmdCopy);
+		chrome.browserAction.setIcon({path:{"19":"19bright.png", "38":"38bright.png"}});
+	}
 	CC.addCmd('ready', function(data,sender){
-		if(showKey){
+		if(enabled && showKey){
 			chrome.tabs.executeScript(sender.tab.id,{
 				file: './tool/showkeywords.js'
 			});
 		}
 	});
 
-})(CC);
+});

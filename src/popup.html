@@ -4,29 +4,106 @@
 	<meta charset="UTF-8" />
 	<title>Copy Cat</title>
 	<style>
-		body{
-			font-size: 12px;
-		}
-		form{
-			margin: 0;
-			padding: 0;
-		}
+	body{
+		font-size: 12px;
+		line-height: 2;
+		width: 200px;
+	}
+	form{
+		margin: 0;
+		padding: 0;
+	}
+	label {
+		display: block;
+		position : relative;
+		height: 2em;
+		clear: both;
+	}
+	input[type="text"] {
+		width:100px;
+		float: right;
+	}
+	input[type="checkbox"] {
+		display: none;
+	}
+	input[type="checkbox"].ios-switch + div {
+		float: right;
+		width : 3em;
+		height : 1em;
+		border : rgba(0, 0, 0, 0.3) solid 1px;
+		border-radius : 999px;
+		margin : 0.1em 0.5em;
+		background : white;
+		background-image : linear-gradient(rgba(0, 0, 0, 0.1), transparent), linear-gradient(90deg, hsl(210, 90%, 60%) 50%, transparent 50%);
+		background-size : 200% 100%;
+		background-position : 100% 0;
+		background-origin : border-box;
+		background-clip : border-box;
+		overflow : hidden;
+		box-shadow : 0 0.1em 0.1em rgba(0, 0, 0, 0.2) inset, 0 0.45em 0 0.1em rgba(0, 0, 0, 0.05) inset;
+		font-size : 1.5em;
+	}
+	input[type="checkbox"].ios-switch:checked + div {
+		padding-left : 2em;
+		width : 1em;
+		background-position : 0 0;
+	}
+	input[type="checkbox"].ios-switch + div:before {
+		content : 'On';
+		float : left;
+		width : 1.5em;
+		height : 1.5em;
+		margin : -0.1em;
+		border : rgba(0, 0, 0, 0.35) solid 1px;
+		border-radius : inherit;
+		background : white;
+		background-image : linear-gradient(rgba(0, 0, 0, 0.2), transparent);
+		box-shadow : 0 0.1em 0.1em 0.1em hsla(0, 0%, 100%, 0.8) inset, 0 0 0.5em rgba(0, 0, 0, 0.3);
+		color : white;
+		text-shadow : 0 -1px 1px rgba(0, 0, 0, 0.3);
+		text-indent : -2.5em;
+	}
+	input[type="checkbox"].ios-switch:active + div:before {
+		background-color : #eee;
+	}
+	input[type="checkbox"].ios-switch + div:before, input[type="checkbox"].ios-switch + div:after {
+		font : normal 0.6em/1.6 Arial, sans-serif;
+		text-transform : uppercase;
+	}
+	input[type="checkbox"].ios-switch + div:after {
+		content : 'Off';
+		float : left;
+		text-indent : 0.5em;
+		color : rgba(0, 0, 0, 0.45);
+		text-shadow : none;
+	}
+	.transition-able input[type="checkbox"].ios-switch + div {
+		transition-duration : 0.4s;
+		transition-property : padding, width, background-position, text-indent;
+	}
+	.transition-able fieldset {
+		transition-duration : 0.4s;
+		transition-property : max-height;
+	}
+	fieldset.disabled > label {
+		display: none;
+	}
 	</style>
 </head>
 <body>
 	<form id="setting">
 		<fieldset>
-			<legend>设置</legend>
-			自动前缀:<input id="prefix" type="text" value="" />
-			<label><input id="showKey" type="checkbox" />显示关键词</label>
+			<legend><label>文字工具<input id="enableTextTool" type="checkbox" class="ios-switch"><div class="switch"></div></label></legend>
+			<label>自动前缀<input id="prefix" type="text" value="" /></label>
+			<label>显示关键词<input id="showKey" type="checkbox" class="ios-switch"><div class="switch"></div></label>
 		</fieldset>
 	</form>
 	<form id="imgtool">
 		<fieldset>
 			<legend>图集工具</legend>
-			总页数:<input id="page" type="text" />
+			<label>总页数<input id="page" type="text" tabindex="1" /></label>
 			<progress id="progress" max="100" value="0"></progress>
-			<input id="submit" type="submit" value="开始" />
+			<input id="submit" type="submit" value="开始" tabindex="2" />
 			<input id="stop" type="button" value="停止" />
 		</fieldset>
 	</form>

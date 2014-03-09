@@ -1,15 +1,18 @@
-(function(){
+chrome.storage.local.get(['showKey','prefix','enableTextTool'], function(items){
 	"use strict";
 	var $prefix = document.getElementById('prefix'),
 		$settingForm = document.getElementById('setting'),
+		$textToolField = $settingForm.querySelector('fieldset'),
+		$enableTextTool = document.getElementById('enableTextTool'),
 		$showKey = document.getElementById('showKey'),
 		bgPage = chrome.extension.getBackgroundPage();
 
 	var onChange = function(){
 		var prefixStr = $prefix.value.replace(/\\n/g,'\n');
-		bgPage.CC.text.onConfigChange('prefix', prefixStr);
+		// bgPage.CC.text.onConfigChange('prefix', prefixStr);
+		chrome.storage.local.set({'prefix':prefixStr});
 	};
-	$prefix.value = (localStorage.getItem('prefix') || '').replace(/\n/g,'\\n');
+	$prefix.value = (items['prefix'] || '').replace(/\n/g,'\\n');
 	$prefix.addEventListener('change', onChange, false);
 	$settingForm.addEventListener('submit',function(e){
 		e.preventDefault();
@@ -19,11 +22,24 @@
 	}, false);
 	window.addEventListener('unload', onChange, false);
 
-	$showKey.checked = Boolean(localStorage.getItem('showKey'));
+	$showKey.checked = items['showKey'];
 	$showKey.addEventListener('click', function(){
-		bgPage.CC.text.onConfigChange('showKey', $showKey.checked);
+		// bgPage.CC.text.onConfigChange('showKey', $showKey.checked);
+		chrome.storage.local.set({'showKey':$showKey.checked});
 	}, false);
-})();
+
+	if (!($enableTextTool.checked = items['enableTextTool'])) {
+		$textToolField.classList.add('disabled');
+	}
+	$enableTextTool.addEventListener('click', function(){
+		var flag = $enableTextTool.checked;
+		// bgPage.CC.text.onConfigChange('enableTextTool', flag);
+		chrome.storage.local.set({'enableTextTool': flag});
+		$textToolField.classList[flag?'remove':'add']('disabled');
+	})
+
+	setTimeout(function(){document.body.classList.add('transition-able');}, 100);
+});
 
 (function(){
 	"use strict";

@@ -9,6 +9,22 @@
 			remoteCommands[cmd] = [handler];
 		}
 	};
+	context.removeCmd = function(cmd, handler){
+		if(!cmd || !remoteCommands[cmd]){
+			return;
+		}
+		if(!handler){
+			delete remoteCommands[cmd];
+		}else{
+			var handlers = remoteCommands[cmd];
+			for(var i = 0, len = handlers.length; i < len; i++){
+				if(handlers[i] == handler){
+					handlers.splice(i,1);
+					break;
+				}
+			}
+		}
+	}
 	context.showNotification = function(msg,delay){
 		var notify=webkitNotifications.createNotification('','',msg),handler;
 		if(delay){

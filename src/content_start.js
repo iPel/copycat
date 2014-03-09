@@ -33,7 +33,7 @@ var getImageByPoint = function(){
 	}
 	point = null;
 };
-window.addEventListener('keydown',function(e){
+var onKeyDown = function(e){
 	if(e.ctrlKey && e.keyCode===67 && !e.shiftKey && !e.altKey){
 		e.preventDefault();
 		var data=window.getSelection().toString();
@@ -42,7 +42,18 @@ window.addEventListener('keydown',function(e){
 			data: data
 		});
 	}
-},true);
+};
+chrome.storage.local.get('enableTextTool', function(items){
+	if(items['enableTextTool']) {
+		window.addEventListener('keydown', onKeyDown, true);
+	}
+	chrome.storage.onChanged.addListener(function(changes, area){
+		var field;
+		if (area == 'local' && (field = changes['enableTextTool'])) {
+			window[field.newVaule?'addEventListener':'removeEventListener']('keydown', onKeyDown, true);
+		}
+	});
+});
 window.addEventListener('contextmenu',function(e){
 	point = {
 		x:e.pageX,

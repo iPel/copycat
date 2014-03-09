@@ -1,18 +1,18 @@
 {
   "manifest_version": 2,
   "name": "复制助手",
-  "version": "2.7",
-  "description": "复制助手2014 贺岁版",
+  "version": "3.0",
+  "description": "复制助手2014",
   "browser_action": {
-    "default_icon": "logo.gif",
+    "default_icon": {"19": "19dark.png", "38": "38dark.png"},
     "default_popup": "popup.html"
   },
   "background": {
     "scripts": ["background.js","bg_texttool.js","bg_imgtool.js"]
   },
-  "permissions": ["<all_urls>","http://translate.google.cn/*","notifications","contextMenus","tabs"],
+  "permissions": ["<all_urls>","http://translate.google.cn/*","notifications","contextMenus","tabs","storage"],
   "icons": {
-	"16": "16.gif"
+    "16": "16.gif"
   },
   "content_scripts": [
     {

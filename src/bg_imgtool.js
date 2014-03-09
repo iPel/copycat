@@ -1,6 +1,6 @@
-(function(ns, undefined){
+(function(){
 	"use strict";
-	var context = ns['image'] = {};
+	var context = CC['image'] = {};
 	var $canvas = document.createElement('canvas'),
 		autoSaveState = 0, //0: stop, 1:running, 2:planning stop
 		pageLeft = -1,
