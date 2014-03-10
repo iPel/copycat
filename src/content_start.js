@@ -50,7 +50,7 @@ chrome.storage.local.get('enableTextTool', function(items){
 	chrome.storage.onChanged.addListener(function(changes, area){
 		var field;
 		if (area == 'local' && (field = changes['enableTextTool'])) {
-			window[field.newVaule?'addEventListener':'removeEventListener']('keydown', onKeyDown, true);
+			window[field.newValue?'addEventListener':'removeEventListener']('keydown', onKeyDown, true);
 		}
 	});
 });

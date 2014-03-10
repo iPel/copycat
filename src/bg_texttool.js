@@ -132,14 +132,14 @@ chrome.storage.local.get(['enableTextTool', 'showKey', 'prefix'], function(items
 		}
 		var field;
 		if(field = changes['prefix']){
-			prefixStr = field.newVaule || '';
+			prefixStr = field.newValue || '';
 			// localStorage.setItem('prefix',data);
 		}
 		if(field = changes['showKey']){
-			showKey = field.newVaule;
+			showKey = field.newValue;
 		}
 		if(field = changes['enableTextTool']){
-			enabled = field.newVaule;
+			enabled = field.newValue;
 			if(enabled){
 				// localStorage.setItem('enableTextTool',1);
 				CC.addCmd('copy', cmdCopy);
@@ -157,12 +157,12 @@ chrome.storage.local.get(['enableTextTool', 'showKey', 'prefix'], function(items
 		CC.addCmd('copy', cmdCopy);
 		chrome.browserAction.setIcon({path:{"19":"19bright.png", "38":"38bright.png"}});
 	}
-	CC.addCmd('ready', function(data,sender){
-		if(enabled && showKey){
-			chrome.tabs.executeScript(sender.tab.id,{
-				file: './tool/showkeywords.js'
-			});
-		}
-	});
+	// CC.addCmd('ready', function(data,sender){
+	// 	if(enabled && showKey){
+	// 		chrome.tabs.executeScript(sender.tab.id,{
+	// 			file: './tool/showkeywords.js'
+	// 		});
+	// 	}
+	// });
 
 });

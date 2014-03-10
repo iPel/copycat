@@ -22,11 +22,11 @@ chrome.storage.local.get(['showKey','prefix','enableTextTool'], function(items){
 	}, false);
 	window.addEventListener('unload', onChange, false);
 
-	$showKey.checked = items['showKey'];
-	$showKey.addEventListener('click', function(){
-		// bgPage.CC.text.onConfigChange('showKey', $showKey.checked);
-		chrome.storage.local.set({'showKey':$showKey.checked});
-	}, false);
+	// $showKey.checked = items['showKey'];
+	// $showKey.addEventListener('click', function(){
+	// 	// bgPage.CC.text.onConfigChange('showKey', $showKey.checked);
+	// 	chrome.storage.local.set({'showKey':$showKey.checked});
+	// }, false);
 
 	if (!($enableTextTool.checked = items['enableTextTool'])) {
 		$textToolField.classList.add('disabled');
@@ -36,7 +36,7 @@ chrome.storage.local.get(['showKey','prefix','enableTextTool'], function(items){
 		// bgPage.CC.text.onConfigChange('enableTextTool', flag);
 		chrome.storage.local.set({'enableTextTool': flag});
 		$textToolField.classList[flag?'remove':'add']('disabled');
-	})
+	});
 
 	setTimeout(function(){document.body.classList.add('transition-able');}, 100);
 });

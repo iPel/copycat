@@ -1,3 +1,12 @@
+chrome.runtime.onInstalled.addListener(function(details){
+	if (details.reason == 'update' && Number(details.previousVersion) < 3) {
+		var prefix = localStorage.getItem('prefix');
+		if (prefix) {
+			chrome.storage.local.set({'prefix':prefix});
+			localStorage.clear();
+		}
+	}
+});
 (function(ns, undefined){
 	"use strict";
 	var context = ns['CC'] = {};
