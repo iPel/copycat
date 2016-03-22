@@ -77,7 +77,7 @@ chrome.storage.local.get(['enableTextTool', 'showKey', 'prefix'], function(items
 						data.push(result[i][0]);
 					}
 					copyText(data.join('')); */
-					var result = this.responseText.substring(1, this.responseText.length - 1).replace(/\u200b/g,'');
+					var result=JSON.parse(this.responseText.replace(/\u200b/g,''));
 					copyText(result);
 					//CC.showNotification('转换成功,可以粘贴了',2000);
 				}catch(e){
