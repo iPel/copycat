@@ -71,12 +71,14 @@ chrome.storage.local.get(['enableTextTool', 'showKey', 'prefix'], function(items
 		if(this.readyState===4){
 			if(this.status===200){
 				try{
-					var result=JSON.parse(this.responseText.replace(/\u200b/g,'').replace(/,+/g,','))[0]; //damn the limitation of eval
+					/* var result=JSON.parse(this.responseText.replace(/\u200b/g,'').replace(/,+/g,','))[0]; //damn the limitation of eval
 					var data=[];
 					for(var i=0,len=result.length;i<len;i++){
 						data.push(result[i][0]);
 					}
-					copyText(data.join(''));
+					copyText(data.join('')); */
+					var result = this.responseText.substring(1, this.responseText.length - 1).replace(/\u200b/g,'');
+					copyText(result);
 					//CC.showNotification('转换成功,可以粘贴了',2000);
 				}catch(e){
 					CC.showNotification('转换失败>﹏﹏<',2000);
