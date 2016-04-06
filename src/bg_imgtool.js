@@ -40,9 +40,9 @@
 	};
 	var getImage = function(url,id){
 		var img = new Image(),
-			filename = url.replace(/^.*\//,'').split('.')[0],
+			filename = url.replace(/^.*\//,'').split('.')[0].replace(/[\\/:*?"<>|]/g, '_'),
 			m = url.match(/\.(jpg|jpeg|png|gif)\b/ig),
-			ext = m?m[0]:'.jpg',
+			ext = m && m[0],
 			maxWidth, maxHeight;
 		if (saveType == 1) {
 			maxWidth = maxHeight = 800;
@@ -52,12 +52,21 @@
 		img.onload = function(){
 			var option;
 			if(img.width<=maxWidth && img.height<=maxHeight){
-				option = {
-					imgData: url,
-					name: filename,
-					ext: ext,
-					id: id
-				};
+				if (ext) {
+					option = {
+						imgData: url,
+						name: filename,
+						ext: ext,
+						id: id
+					};
+				} else {
+					option = {
+						imgData: resizeImage(img, image.width, image.height),
+						name: filename,
+						ext: '.jpg',
+						id: id
+					};
+				}
 			}else if(img.width>img.height){
 				option = {
 					imgData: resizeImage(img,maxWidth,Math.round(img.height*maxWidth/img.width)),
