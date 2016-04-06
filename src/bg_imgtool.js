@@ -61,7 +61,7 @@
 					};
 				} else {
 					option = {
-						imgData: resizeImage(img, image.width, image.height),
+						imgData: resizeImage(img, img.width, img.height),
 						name: filename,
 						ext: '.jpg',
 						id: id
